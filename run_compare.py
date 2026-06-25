@@ -29,7 +29,7 @@ def run_one(adapter, tag):
     n_events = record(adapter, feed_path)
     bars = build_bars(ReplayAdapter(feed_path).stream())
     feats = compute_features(bars)
-    df, artifact, split = train_and_backtest(feats)
+    df, artifact, split = train_and_backtest(feats)   # let BIC choose; forcing a count mislabels regimes
     print(f"   [{tag}] {n_events} events -> {len(feats)} bars | "
           f"states={artifact['meta']['n_states']} | "
           f"price range {df['close'].min():.0f}-{df['close'].max():.0f}")

@@ -22,7 +22,7 @@ from src import evaluate, store
 
 def main():
     config.ensure_dirs()
-    feed_path = config.RAW_DIR / "demo_feed.jsonl"
+    feed_path = config.RAW_DIR / "demo_feed.jsonl"  
 
     print("1) Generating + recording synthetic feed ...")
     adapter = SyntheticAdapter(n_days=40, seed=7)
@@ -36,7 +36,10 @@ def main():
     print(f"   {len(bars)} bars -> {len(feats)} feature rows ({len(config.FEATURE_COLS)} features)")
 
     print("\n3) Fitting pipeline (de-seasonalize -> scale -> AIC/BIC -> HMM) + backtest ...")
-    df, artifact, split = train_and_backtest(feats)        # n_states chosen by BIC
+    # Let BIC choose the state count. On the re-tuned realistic data this lands at
+    # ~4-5 and the regimes come out economically coherent. Forcing a count (we tried
+    # pinning 4) produced mislabeled, incoherent regimes — so we let the data speak.
+    df, artifact, split = train_and_backtest(feats)
     save_artifact(config.MODEL_DIR / "regime_artifact.pkl",
                   model=artifact["model"], scaler=artifact["scaler"],
                   seasonality_stats=artifact["seasonality_stats"],
